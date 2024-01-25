@@ -1,110 +1,36 @@
-
-import os
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.conditions import IfCondition, UnlessCondition
+from ament_index_python.packages import get_package_share_directory
+from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
 
-  # Set the path to different files and folders.
-  pkg_gazebo_ros = FindPackageShare(package='gazebo_ros').find('gazebo_ros')   
-  pkg_share = FindPackageShare(package='main_pkg').find('main_pkg')
-  default_launch_dir = os.path.join(pkg_share, 'launch')
-  default_model_path = os.path.join(pkg_share, 'descriptions/robot_model_v1.urdf')
-  robot_name_in_urdf = 'basic_mobile_bot'
-  default_rviz_config_path = os.path.join(pkg_share, 'rviz/urdf_config.rviz')
-  world_file_name = 'world1.world'
-  world_path = os.path.join(pkg_share, 'worlds', world_file_name)
-  
-  # Launch configuration variables specific to simulation
-  headless = LaunchConfiguration('headless')
-  model = LaunchConfiguration('model')
-  rviz_config_file = LaunchConfiguration('rviz_config_file')
-  use_robot_state_pub = LaunchConfiguration('use_robot_state_pub')
-  use_rviz = LaunchConfiguration('use_rviz')
-  use_sim_time = LaunchConfiguration('use_sim_time')
-  use_simulator = LaunchConfiguration('use_simulator')
-  world = LaunchConfiguration('world')
+    use_sim_time = LaunchConfiguration('use_sim_time')
 
-  # Declare the launch arguments  
-  declare_model_path_cmd = DeclareLaunchArgument(
-    name='model', 
-    default_value=default_model_path, 
-    description='Absolute path to robot urdf file')
+    log_level = DeclareLaunchArgument(
+        name='log_level', 
+        default_value='INFO', 
+        choices=['DEBUG','INFO','WARN','ERROR','FATAL'],
+        description='Flag to set log level')
+
+    simulation = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([get_package_share_directory('meu_pkg_py'), '/launch/simulation.launch.py']),
+         
+           
+    )
+
+    robot = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([get_package_share_directory('meu_pkg_py'), '/launch/load.launch.py']),
+    )
+
+    # SLAM (SLAM Toolbox ou Cartographer) vem a partir daqui:
     
-  declare_rviz_config_file_cmd = DeclareLaunchArgument(
-    name='rviz_config_file',
-    default_value=default_rviz_config_path,
-    description='Full path to the RVIZ config file to use')
-
-  declare_simulator_cmd = DeclareLaunchArgument(
-    name='headless',
-    default_value='False',
-    description='Whether to execute gzclient')
-    
-  declare_use_robot_state_pub_cmd = DeclareLaunchArgument(
-    name='use_robot_state_pub',
-    default_value='True',
-    description='Whether to start the robot state publisher')
-
-  declare_use_rviz_cmd = DeclareLaunchArgument(
-    name='use_rviz',
-    default_value='True',
-    description='Whether to start RVIZ')
-    
-  declare_use_sim_time_cmd = DeclareLaunchArgument(
-    name='use_sim_time',
-    default_value='True',
-    description='Use simulation (Gazebo) clock if true')
-
-  declare_use_simulator_cmd = DeclareLaunchArgument(
-    name='use_simulator',
-    default_value='True',
-    description='Whether to start the simulator')
-
-  declare_world_cmd = DeclareLaunchArgument(
-    name='world',
-    default_value=world_path,
-    description='Full path to the world model file to load')
-   
-  # Specify the actions
-
-  # Start Gazebo server
-  start_gazebo_server_cmd = IncludeLaunchDescription(
-    PythonLaunchDescriptionSource(os.path.join(pkg_gazebo_ros, 'launch', 'gzserver.launch.py')),
-    condition=IfCondition(use_simulator),
-    launch_arguments={'world': world}.items())
-
-  # Start Gazebo client    
-  start_gazebo_client_cmd = IncludeLaunchDescription(
-    PythonLaunchDescriptionSource(os.path.join(pkg_gazebo_ros, 'launch', 'gzclient.launch.py')),
-    condition=IfCondition(PythonExpression([use_simulator, ' and not ', headless])))
-
-  # Subscribe to the joint states of the robot, and publish the 3D pose of each link.
-  start_robot_state_publisher_cmd = Node(
-    condition=IfCondition(use_robot_state_pub),
-    package='robot_state_publisher',
-    executable='robot_state_publisher',
-    parameters=[{'use_sim_time': use_sim_time, 
-    'robot_description': Command(['xacro ', model])}],
-    arguments=[default_model_path])
-
-  # Launch RViz
-  start_rviz_cmd = Node(
-    condition=IfCondition(use_rviz),
-    package='rviz2',
-    executable='rviz2',
-    name='rviz2',
-    output='screen',
-    arguments=['-d', rviz_config_file])    
-    
-  slam = Node(
+    slam = Node(
         parameters=[
-          '/home/thormeyr/TCC/dv_ws/src/main_pkg/config/mapper_params_online_async.yaml',
+          '/home/thormeyr/ws_urdf2/src/meu_pkg_py/config/mapper_params_online_async.yaml',
           {'use_sim_time': use_sim_time}
         ],
         package='slam_toolbox',
@@ -112,25 +38,13 @@ def generate_launch_description():
         name='slam_toolbox',
         output='screen')
 
-  
-  # Create the launch description and populate
-  ld = LaunchDescription()
+    
+	
 
-  # Declare the launch options
-  ld.add_action(declare_model_path_cmd)
-  ld.add_action(declare_rviz_config_file_cmd)
-  ld.add_action(declare_simulator_cmd)
-  ld.add_action(declare_use_robot_state_pub_cmd)  
-  ld.add_action(declare_use_rviz_cmd) 
-  ld.add_action(declare_use_sim_time_cmd)
-  ld.add_action(declare_use_simulator_cmd)
-  ld.add_action(declare_world_cmd)
+    ld = LaunchDescription()
+    ld.add_action(log_level)
+    ld.add_action(simulation)
+    ld.add_action(robot)
+    ld.add_action(slam)
 
-  # Add any actions
-  ld.add_action(start_gazebo_server_cmd)
-  ld.add_action(start_gazebo_client_cmd)
-  ld.add_action(start_robot_state_publisher_cmd)
-  ld.add_action(start_rviz_cmd)
-  ld.add_action(slam)
-
-  return ld
+    return ld
