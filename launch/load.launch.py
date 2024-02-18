@@ -18,7 +18,7 @@ def generate_launch_description():
         default_value='',
         description='Top-level namespace')
 
-    urdf_tutorial_path = get_package_share_path('meu_pkg_py')
+    urdf_tutorial_path = get_package_share_path('iris_description')
     default_model_path = urdf_tutorial_path / 'urdf/robot.urdf'
 
     default_rviz_config_path = urdf_tutorial_path / 'config/rviz/robot.rviz'

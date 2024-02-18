@@ -1,3 +1,5 @@
+from ament_index_python.packages import get_package_share_path
+
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, SetEnvironmentVariable
 from launch.substitutions import LaunchConfiguration
@@ -19,9 +21,11 @@ def generate_launch_description():
 
     world_path = DeclareLaunchArgument(
         name='world_path', 
-        default_value='/home/thormeyr/ws_urdf2/src/meu_pkg_py/worlds/world1.world', 
+        default_value=get_package_share_directory('iris_description')+'/worlds/world1.world', 
+        #default_value='',
         description=''
     )
+    
 
     gzserver = IncludeLaunchDescription(
             PythonLaunchDescriptionSource([get_package_share_directory('gazebo_ros'), '/launch/gzserver.launch.py']),
@@ -38,7 +42,7 @@ def generate_launch_description():
 
     ld = LaunchDescription()
     ld.add_action(gz_model_path)
-    # ld.add_action(gz_model_uri)
+    #ld.add_action(gz_model_uri)
     ld.add_action(world_path)
     ld.add_action(gzserver)
     ld.add_action(gzclient)

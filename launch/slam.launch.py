@@ -17,20 +17,20 @@ def generate_launch_description():
         description='Flag to set log level')
 
     simulation = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([get_package_share_directory('meu_pkg_py'), '/launch/simulation.launch.py']),
+        PythonLaunchDescriptionSource([get_package_share_directory('iris_description'), '/launch/simulation.launch.py']),
          
            
     )
 
     robot = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([get_package_share_directory('meu_pkg_py'), '/launch/load.launch.py']),
+        PythonLaunchDescriptionSource([get_package_share_directory('iris_description'), '/launch/load.launch.py']),
     )
 
     # SLAM (SLAM Toolbox ou Cartographer) vem a partir daqui:
     
     slam = Node(
         parameters=[
-          '/home/thormeyr/ws_urdf2/src/meu_pkg_py/config/mapper_params_online_async.yaml',
+          get_package_share_directory('iris_description')+'/config/mapper_params_online_async.yaml',
           {'use_sim_time': use_sim_time}
         ],
         package='slam_toolbox',

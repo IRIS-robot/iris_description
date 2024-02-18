@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'meu_pkg_py'
+package_name = 'iris_description'
 
 
 import os
@@ -31,7 +31,7 @@ setup(
     version='0.0.0',
     packages=find_packages(exclude=['test']),
 
-    data_files=package_files(data_files, [ 'config/', 'launch/', 'simulation/', 'urdf/']),
+    data_files=package_files(data_files, [ 'config/', 'launch/', 'simulation/', 'urdf/','meshes/','worlds']),
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='fei',

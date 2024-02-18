@@ -1,13 +1,6 @@
 <?xml version="1.0"?>
 <robot name="robot">
     
-    
-    
-    
-    
-    
-    
-    
         <!-- BASE_FOOTPRINT LINK -->
 
     <joint name="base_footprint_joint" type="fixed">
@@ -25,20 +18,22 @@
         <visual>
             <origin xyz="0 0 -0.05" rpy="0 0 -1.57"/> 
       	    <geometry>
-        	<mesh filename="file:///home/thormeyr/ws_urdf2/src/meu_pkg_py/meshes/chassi.stl" scale="0.001 0.001 0.001"/>
+        	<mesh filename="file://$(find iris_description)/meshes/chassi_1.stl" scale="1 1 1"/>
       	    </geometry>
-            <material name="red">
-                <color rgba="1 0.0 0.0 1"/>
+            <material name="white">
+                <color rgba="1 1 1 1"/>
             </material>
         </visual>
         <collision>
+            <origin xyz="0 0 -0.05" rpy="0 0 -1.57"/> 
             <geometry>
-                <box size="0.6 0.3 0.1"/>
+                <mesh filename="file://$(find iris_description)/meshes/chassi_1.stl" scale="1 1 1"/>
             </geometry>
         </collision>
         <inertial>
-            <mass value="1.0"/>
-            <inertia ixx="0.015" ixy="0" ixz="0" iyy="0.0375" iyz="0.0" izz="0.0375"/>
+            <origin xyz="0.00000000 0.08125000 0.07750000"/>
+            <mass value="1.00000000"/>
+  	    <inertia ixx="0.02241803" ixy="-0.00000000" ixz="-0.00000000" iyy="0.03523565" iyz="0.00000000" izz="0.05098702"/>
         </inertial>
     </link>
 
@@ -48,8 +43,8 @@
             <geometry>
                 <cylinder radius="0.035" length="0.05"/>
             </geometry>
-            <material name="blue">
-                <color rgba="0.0 0.0 1 1"/>
+            <material name="grey">
+                <color rgba="0.5 0.5 0.5 1"/>
             </material>
 
         </visual>
@@ -65,10 +60,10 @@
     </link>
 
     <joint name="right_wheel_joint" type="continuous">
-        <axis xyz="0.0 0.0 1"/>
+        <axis xyz="0 0.0 1"/>
         <parent link="base_link"/>
         <child link="right_wheel"/>
-        <origin xyz="-0.2825 -0.125 -0.05" rpy="1.5708 0.0 0.0"/>
+        <origin xyz="0 -0.25 -0.05" rpy="-1.5708 0.0 0.0"/>
         <joint_properties damping="1.0" friction="1.0" />
     
     <!-- roda esquerda -->
@@ -78,7 +73,7 @@
             <geometry>
                 <cylinder radius="0.035" length="0.05"/>
             </geometry>
-            <material name="blue">
+            <material name="grey">
             </material>
 
         </visual>
@@ -93,21 +88,24 @@
     </link>
 
     <joint name="left_wheel_joint" type="continuous">
-        <axis xyz="0.0 0.0 1"/>
+        <axis xyz="0 0.0 -1"/>
         <parent link="base_link"/>
         <child link="left_wheel"/>
-        <origin xyz="-0.2825 0.125 -0.05" rpy="1.5708 0.0 0.0"/>
+        <origin xyz="0 0.25 -0.05" rpy="1.5708 0.0 0.0"/>
         <joint_properties damping="1.0" friction="1.0" />
     </joint>
 
+    
+    
+    
     <!-- roda castor (esferica) -->
-    <link name="caster_wheel">
+    <link name="caster_wheel_f_right">
         <visual>
           <geometry>
             <sphere radius="0.035"/>
           </geometry>
-          <material name="green">
-            <color rgba="0.0 1 0.0 1"/>
+          <material name="grey">
+                <color rgba="0.5 0.5 0.5 1"/>
           </material>
         </visual>
         <collision>
@@ -130,10 +128,122 @@
           <inertia ixx="49e-6" ixy="0.0" ixz="0.0" iyy="49e-6" iyz="0.0" izz="49e-6"/>
         </inertial>
     </link>
-    <joint name="caster_wheel_joint" type="fixed">
+    <joint name="caster_wheel_f_right_joint" type="fixed">
         <parent link="base_link"/>
-        <child link="caster_wheel"/>
-        <origin rpy="0 0 0" xyz="0.25 0.0 -0.05"/>
+        <child link="caster_wheel_f_right"/>
+        <origin rpy="0 0 0" xyz="-0.18 -0.13 -0.05"/>
+    </joint>
+    
+    
+    
+    
+    <!-- roda castor (esferica) -->
+    <link name="caster_wheel_f_left">
+        <visual>
+          <geometry>
+            <sphere radius="0.035"/>
+          </geometry>
+          <material name="grey">
+                <color rgba="0.5 0.5 0.5 1"/>
+          </material>
+        </visual>
+        <collision>
+          <geometry>
+            <sphere radius="0.035"/>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0</mu>
+                <mu2>0</mu2>
+                <slip1>1.0</slip1>
+                <slip2>1.0</slip2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+        <inertial>
+          <mass value="0.1"/>
+          <inertia ixx="49e-6" ixy="0.0" ixz="0.0" iyy="49e-6" iyz="0.0" izz="49e-6"/>
+        </inertial>
+    </link>
+    <joint name="caster_wheel_f_left_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="caster_wheel_f_left"/>
+        <origin rpy="0 0 0" xyz="-0.18 0.13 -0.05"/>
+    </joint>
+    
+    
+    <!-- roda castor (esferica) -->
+    <link name="caster_wheel_b_right">
+        <visual>
+          <geometry>
+            <sphere radius="0.035"/>
+          </geometry>
+          <material name="grey">
+                <color rgba="0.5 0.5 0.5 1"/>
+          </material>
+        </visual>
+        <collision>
+          <geometry>
+            <sphere radius="0.035"/>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0</mu>
+                <mu2>0</mu2>
+                <slip1>1.0</slip1>
+                <slip2>1.0</slip2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+        <inertial>
+          <mass value="0.1"/>
+          <inertia ixx="49e-6" ixy="0.0" ixz="0.0" iyy="49e-6" iyz="0.0" izz="49e-6"/>
+        </inertial>
+    </link>
+    <joint name="caster_wheel_b_right_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="caster_wheel_b_right"/>
+        <origin rpy="0 0 0" xyz="0.18 -0.13 -0.05"/>
+    </joint>
+    
+    <!-- roda castor (esferica) -->
+    <link name="caster_wheel_b_left">
+        <visual>
+          <geometry>
+            <sphere radius="0.035"/>
+          </geometry>
+          <material name="grey">
+                <color rgba="0.5 0.5 0.5 1"/>
+          </material>
+        </visual>
+        <collision>
+          <geometry>
+            <sphere radius="0.035"/>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0</mu>
+                <mu2>0</mu2>
+                <slip1>1.0</slip1>
+                <slip2>1.0</slip2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+        <inertial>
+          <mass value="0.1"/>
+          <inertia ixx="49e-6" ixy="0.0" ixz="0.0" iyy="49e-6" iyz="0.0" izz="49e-6"/>
+        </inertial>
+    </link>
+    <joint name="caster_wheel_b_left_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="caster_wheel_b_left"/>
+        <origin rpy="0 0 0" xyz="0.18 0.13 -0.05"/>
     </joint>
 
     
@@ -143,27 +253,31 @@
     <link name="laser_scanner">
         <visual>
             <geometry>
-                <box size="0.1 0.1 0.1"/>
+            	<cylinder radius="0.025" length="0.03"/>
             </geometry>
+            
+            <material name="black">
+                <color rgba="0 0 0 1"/>
+            </material>
         </visual>
-
+        
         <collision>
             <geometry>
-                <box size="0.1 0.1 0.1"/>
+                <cylinder radius="0.025" length="0.03"/>
             </geometry>
         </collision>
 
         <inertial>
             <mass value="1e-5"/>
-            <inertia ixx="1e-6" ixy="0" ixz="0.0" iyy="1e-6" iyz="0.0" izz="1e-6"/>
+            <inertia ixx="3.81e-9" ixy="0" ixz="0" iyy="3.81e-9" iyz="0.0" izz="1.25e-7"/>
         </inertial>
     </link>
 
     <joint name="laser_scanner_joint" type="fixed">
-        <axis xyz="0.0 1 0.0"/>
+        <axis xyz="0.0 1 0"/>
         <parent link="base_link"/>
         <child link="laser_scanner"/>
-        <origin xyz="0.0 0.0 0.08" rpy="0.0 0.0 3.1415"/>
+        <origin xyz="0.21 0.0 0.005" rpy="0.0 0.0 0"/>
     </joint>
 
     <!-- plugin - laser scanner -->
@@ -177,8 +291,8 @@
                     <horizontal>
                         <samples>720</samples>
                         <resolution>1</resolution>
-                        <min_angle>-1.578</min_angle>
-                        <max_angle>1.578</max_angle>
+                        <min_angle>-1.928</min_angle>
+                        <max_angle>1.928</max_angle>
                     </horizontal>
                 </scan>
                 <range>
@@ -191,7 +305,7 @@
             <ros>
             	<remapping>~/out:=scan</remapping>
             </ros>
-            	<frame_name>laser</frame_name>
+            	<frame_name>laser_scanner</frame_name>
             	<output_type>sensor_msgs/LaserScan</output_type>
             </plugin>
         </sensor>
@@ -200,10 +314,10 @@
     <!-- plugin - differential drive -->
     <gazebo>
         <plugin name="bot_controller"   filename="libgazebo_ros_diff_drive.so">
-            <left_joint>right_wheel_joint</left_joint>
-            <right_joint>left_wheel_joint</right_joint>
+            <left_joint>left_wheel_joint</left_joint>
+            <right_joint>right_wheel_joint</right_joint>
             <robot_base_frame>base_link</robot_base_frame>
-            <wheel_separation>0.25</wheel_separation>
+            <wheel_separation>0.5</wheel_separation>
             <wheel_diameter>0.07</wheel_diameter>
          
             
@@ -217,14 +331,53 @@
 
     <!-- cores para o Gazebo -->
     <gazebo reference="base_link">
-        <material>Gazebo/Orange</material>
+        <material>Gazebo/White</material>
     </gazebo>
 
     <gazebo reference="laser_scanner">
-        <material>Gazebo/Blue</material>
+        <material>Gazebo/Black</material>
     </gazebo>
     
-    <gazebo reference="caster_wheel">
+    <gazebo reference="caster_wheel_b_right">
+        <material>Gazebo/Grey</material>
+    </gazebo>
+    
+    <gazebo reference="caster_wheel_b_left">
+        <material>Gazebo/Grey</material>
+    </gazebo>
+    
+    <gazebo reference="caster_wheel_f_left">
+        <material>Gazebo/Grey</material>
+    </gazebo>
+    
+    <gazebo reference="caster_wheel_f_right">
+        <material>Gazebo/Grey</material>
+    </gazebo>
+    
+    <gazebo reference="left_wheel">
+        <material>Gazebo/Grey</material>
+    </gazebo>
+    
+    <gazebo reference="right_wheel">
+        <material>Gazebo/Grey</material>
+    </gazebo>
+    
+    <gazebo reference="caster_wheel_b_right">
+    	<mu1 value="0.001"/>
+    	<mu2 value="0.001"/>
+    </gazebo>
+    
+    <gazebo reference="caster_wheel_b_left">
+    	<mu1 value="0.001"/>
+    	<mu2 value="0.001"/>
+    </gazebo>
+    
+    <gazebo reference="caster_wheel_f_right">
+    	<mu1 value="0.001"/>
+    	<mu2 value="0.001"/>
+    </gazebo>
+    
+    <gazebo reference="caster_wheel_f_left">
     	<mu1 value="0.001"/>
     	<mu2 value="0.001"/>
     </gazebo>
